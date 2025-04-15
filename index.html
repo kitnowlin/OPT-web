@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPTrade of the Day</title>
+    <style>
+        :root {
+            --primary-color: #2a5298;
+            --secondary-color: #4caf50;
+            --background-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .card {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: #1e3c72;
+        }
+        
+        .button-secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .button-secondary:hover {
+            background-color: #3d8b40;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .strategy-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .strategy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+        
+        .badge-bullish {
+            background-color: #e6f7e6;
+            color: #2e7d32;
+        }
+        
+        .badge-bearish {
+            background-color: #fde9e9;
+            color: #c62828;
+        }
+        
+        .badge-neutral {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin: 1.5rem 0;
+        }
+        
+        .slider-container {
+            margin: 1.5rem 0;
+        }
+        
+        .slider {
+            width: 100%;
+        }
+        
+        .results-container {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: #f1f1f1;
+        }
+        
+        .profit {
+            color: #2e7d32;
+        }
+        
+        .loss {
+            color: #c62828;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>OPTrade of the Day</h1>
+        <p>High-risk, high-reward options trading strategies with downside protection</p>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" data-tab="market-analysis">Market Analysis</div>
+            <div class="tab" data-tab="strategy-recommendations">Strategy Recommendations</div>
+            <div class="tab" data-tab="trade-calculator">Trade Calculator</div>
+        </div>
+        
+        <div class="tab-content active" id="market-analysis">
+            <div class="card">
+                <h2>Market Sentiment Analysis</h2>
+                <p>Analyze current market sentiment and volatility to identify trading opportunities.</p>
+                
+                <div class="form-group">
+                    <label for="symbols">Stock Symbols (comma separated)</label>
+                    <input type="text" id="symbols" placeholder="AAPL, MSFT, GOOGL, AMZN, TSLA" value="AAPL, MSFT, GOOGL, AMZN, TSLA">
+                </div>
+                
+                <button id="analyze-button">Analyze Market Sentiment</button>
+            </div>
+            
+            <div id="sentiment-results" style="display: none;">
+                <div class="card">
+                    <h3>Market News</h3>
+                    <div id="news-container">
+                        <div class="news-item">
+                            <h4>Federal Reserve Signals Potential Rate Cut</h4>
+                            <p>The Federal Reserve has indicated it may consider rate cuts in the coming months as inflation pressures ease.</p>
+                            <small>Source: Financial Times - April 15, 2025</small>
+                        </div>
+                        <div class="news-item">
+                            <h4>Tech Earnings Beat Expectations</h4>
+                            <p>Major technology companies reported stronger than expected earnings, driving market optimism.</p>
+                            <small>Source: Wall Street Journal - April 14, 2025</small>
+                        </div>
+                        <div class="news-item">
+                            <h4>Oil Prices Surge Amid Middle East Tensions</h4>
+                            <p>Crude oil prices jumped 5% as geopolitical tensions in the Middle East raised supply concerns.</p>
+                            <small>Source: Bloomberg - April 13, 2025</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Stock Sentiment</h3>
+                    <table id="sentiment-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Sentiment</th>
+                                <th>Volatility</th>
+                                <th>Recommendation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="card">
+                    <h3>Trading Opportunities</h3>
+                    <div id="opportunities-container" class="grid">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="strategy-recommendations">
+            <div class="card">
+                <h2>Options Strategy Recommendations</h2>
+                <p>Based on market analysis, here are the recommended options strategies for high-risk, high-reward trades with downside protection.</p>
+                
+                <div class="form-group">
+                    <label for="strategy-symbol">Select Stock</label>
+                    <select id="strategy-symbol">
+                        <option value="AAPL">AAPL - Apple Inc.</option>
+                        <option value="MSFT">MSFT - Microsoft Corporation</option>
+                        <option value="GOOGL">GOOGL - Alphabet Inc.</option>
+                        <option value="AMZN">AMZN - Amazon.com, Inc.</option>
+                        <option value="TSLA">TSLA - Tesla, Inc.</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="strategy-type">Strategy Type</label>
+                    <select id="strategy-type">
+                        <option value="Bull Call Spread">Bull Call Spread</option>
+                        <option value="Bear Put Spread">Bear Put Spread</option>
+                        <option value="Iron Condor">Iron Condor</option>
+                        <option value="Straddle">Straddle</option>
+                        <option value="Strangle">Strangle</option>
+                    </select>
+                </div>
+                
+                <button id="generate-strategy-button">Generate Strategy</button>
+            </div>
+            
+            <div id="strategy-results" style="display: none;">
+                <div class="card">
+                    <h3 id="strategy-title">Strategy: Bull Call Spread on AAPL</h3>
+                    
+                    <div class="strategy-details">
+                        <p><strong>Current Price:</strong> <span id="current-price">$175.25</span></p>
+                        <p><strong>Expiration:</strong> <span id="expiration-date">May 15, 2025</span></p>
+                        <p><strong>Market Sentiment:</strong> <span id="market-sentiment" class="badge badge-bullish">Bullish</span></p>
+                        <p><strong>Volatility:</strong> <span id="volatility-score">Medium (0.65)</span></p>
+                    </div>
+                    
+                    <h4>Strategy Legs</h4>
+                    <table id="strategy-legs">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Action</th>
+                                <th>Strike</th>
+                                <th>Price</th>
+                                <th>Expiration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                    
+                    <div class="strategy-metrics">
+                        <p><strong>Net Debit/Credit:</strong> <span id="net-debit-credit">$350 Debit</span></p>
+                        <p><strong>Max Profit:</strong> <span id="max-profit" class="profit">$650</span></p>
+                        <p><strong>Max Loss:</strong> <span id="max-loss" class="loss">$350</span></p>
+                        <p><strong>Probability of Profit:</strong> <span id="profit-probability">65%</span></p>
+                    </div>
+                    
+                    <h4>Profit/Loss Scenarios</h4>
+                    <div class="chart-container" id="profit-loss-chart">
+                        <!-- Chart will be rendered here -->
+                    </div>
+                    
+                    <table id="price-scenarios">
+                        <thead>
+                            <tr>
+                                <th>Price at Expiration</th>
+                                <th>% Change</th>
+                                <th>Profit/Loss</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                    
+                    <button id="adjust-strategy-button" class="button-secondary">Adjust Strategy Parameters</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="trade-calculator">
+            <div class="card">
+                <h2>Options Trade Calculator</h2>
+                <p>Adjust parameters to see how they affect potential outcomes for your options trade.</p>
+                
+                <div class="form-group">
+                    <label for="calculator-symbol">Stock Symbol</label>
+                    <input type="text" id="calculator-symbol" value="AAPL">
+                </div>
+                
+                <div class="form-group">
+                    <label for="calculator-strategy">Strategy Type</label>
+                    <select id="calculator-strategy">
+                        <option value="Bull Call Spread">Bull Call Spread</option>
+                        <option value="Bear Put Spread">Bear Put Spread</option>
+                        <option value="Iron Condor">Iron Condor</option>
+                        <option value="Straddle">Straddle</option>
+                        <option value="Strangle">Strangle</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="stock-price">Current Stock Price ($)</label>
+                    <input type="number" id="stock-price" value="175.25" step="0.01">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="contracts-slider">Number of Contracts: <span id="contracts-value">1</span></label>
+                    <input type="range" id="contracts-slider" class="slider" min="1" max="10" value="1">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="expiration-slider">Days to Expiration: <span id="expiration-value">30</span></label>
+                    <input type="range" id="expiration-slider" class="slider" min="7" max="60" value="30">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="volatility-slider">Implied Volatility: <span id="volatility-value">30%</span></label>
+                    <input type="range" id="volatility-slider" class="slider" min="10" max="100" value="30">
+                </div>
+                
+                <button id="calculate-button">Calculate Trade</button>
+            </div>
+            
+            <div id="calculator-results" style="display: none;">
+                <div class="card">
+                    <h3>Trade Analysis</h3>
+                    
+                    <div class="chart-container" id="calculator-chart">
+                        <!-- Chart will be rendered here -->
+                    </div>
+                    
+                    <div class="results-container">
+                        <h4>Trade Summary</h4>
+                        <p><strong>Strategy:</strong> <span id="result-strategy">Bull Call Spread on AAPL</span></p>
+                        <p><strong>Investment:</strong> <span id="result-investment">$350.00</span></p>
+                        <p><strong>Max Profit:</strong> <span id="result-max-profit" class="profit">$650.00</span></p>
+                        <p><strong>Max Loss:</strong> <span id="result-max-loss" class="loss">$350.00</span></p>
+                        <p><strong>Breakeven Point:</strong> <span id="result-breakeven">$178.50</span></p>
+                        <p><strong>Return on Investment:</strong> <span id="result-roi">185.71%</span></p>
+                    </div>
+                    
+                    <h4>Market Scenarios</h4>
+                    <table id="calculator-scenarios">
+                        <thead>
+                            <tr>
+                                <th>Market Condition</th>
+                                <th>Stock Price</th>
+                                <th>Profit/Loss</th>
+                                <th>% Return</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Very Bullish (+15%)</td>
+                                <td>$201.54</td>
+                                <td class="profit">$650.00</td>
+                                <td class="profit">185.71%</td>
+                            </tr>
+                            <tr>
+                                <td>Bullish (+7%)</td>
+                                <td>$187.52</td>
+                                <td class="profit">$502.00</td>
+                                <td class="profit">143.43%</td>
+                            </tr>
+                            <tr>
+                                <td>Neutral (0%)</td>
+                                <td>$175.25</td>
+                                <td class="loss">-$125.00</td>
+                                <td class="loss">-35.71%</td>
+                            </tr>
+                            <tr>
+                                <td>Bearish (-7%)</td>
+                                <td>$162.98</td>
+                                <td class="loss">-$350.00</td>
+                                <td class="loss">-100.00%</td>
+                            </tr>
+                            <tr>
+                                <td>Very Bearish (-15%)</td>
+                                <td>$148.96</td>
+                                <td class="loss">-$350.00</td>
+                                <td class="loss">-100.00%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>OPTrade of the Day &copy; 2025 | High-risk, high-reward options trading strategies</p>
+    </footer>
+    
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and tab contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding tab content
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Market Analysis Tab
+        document.getElementById('analyze-button').addEventListener('click', () => {
+            const symbolsInput = document.getElementById('symbols').value;
+            const symbols = symbolsInput.split(',').map(s => s.trim());
+            
+            // Show results section
+            document.getElementById('sentiment-results').style.display = 'block';
+            
+            // Generate random sentiment data
+            const sentimentTable = document.getElementById('sentiment-table').querySelector('tbody');
+            sentimentTable.innerHTML = '';
+            
+            const opportunitiesContainer = document.getElementById('opportunities-container');
+            opportunitiesContainer.innerHTML = '';
+            
+            symbols.forEach(symbol => {
+                const sentimentScore = Math.random() * 2 - 1; // Between -1 and 1
+                const volatilityScore = Math.random(); // Between 0 and 1
+                
+                let sentimentCategory, badgeClass;
+                if (sentimentScore > 0.3) {
+                    sentimentCategory = 'Bullish';
+                    badgeClass = 'badge-bullish';
+                } else if (sentimentScore < -0.3) {
+                    sentimentCategory = 'Bearish';
+                    badgeClass = 'badge-bearish';
+                } else {
+                    sentimentCategory = 'Neutral';
+                    badgeClass = 'badge-neutral';
+                }
+                
+                let volatilityCategory;
+                if (volatilityScore > 0.7) {
+                    volatilityCategory = 'High';
+                } else if (volatilityScore > 0.3) {
+                    volatilityCategory = 'Medium';
+                } else {
+                    volatilityCategory = 'Low';
+                }
+                
+                // Add to sentiment table
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${symbol}</td>
+                    <td><span class="badge ${badgeClass}">${sentimentCategory} (${sentimentScore.toFixed(2)})</span></td>
+                    <td>${volatilityCategory} (${volatilityScore.toFixed(2)})</td>
+                    <td>${getRecommendation(sentimentCategory, volatilityCategory)}</td>
+                `;
+                sentimentTable.appendChild(row);
+                
+                // Only create opportunities for some symbols
+                if (Math.random() > 0.3) {
+                    const opportunity = document.createElement('div');
+                    opportunity.className = 'strategy-card';
+                    opportunity.innerHTML = `
+                        <h4>${symbol} - Trading Opportunity</h4>
+                        <p><span class="badge ${badgeClass}">${sentimentCategory}</span> <span class="badge badge-neutral">${volatilityCategory} Volatility</span></p>
+                        <p>${getOpportunityReason(sentimentCategory, volatilityCategory)}</p>
+                        <p><strong>Recommended Strategy:</strong> ${getRecommendedStrategy(sentimentCategory, volatilityCategory)}</p>
+                        <button class="view-strategy-button" data-symbol="${symbol}" data-sentiment="${sentimentScore}" data-volatility="${volatilityScore}">View Strategy</button>
+                    `;
+                    opportunitiesContainer.appendChild(opportunity);
+                }
+            });
+            
+            // Add event listeners to view strategy buttons
+            document.querySelectorAll('.view-strategy-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const symbol = button.getAttribute('data-symbol');
+                    const sentiment = parseFloat(button.getAttribute('data-sentiment'));
+                    const volatility = parseFloat(button.getAttribute('data-volatility'));
+                    
+                    // Switch to strategy tab
+                    document.querySelector('.tab[data-tab="strategy-recommendations"]').click();
+                    
+                    // Set values in strategy tab
+                    document.getElementById('strategy-symbol').value = symbol;
+                    
+                    // Select appropriate strategy based on sentiment
+                    const strategySelect = document.getElementById('strategy-type');
+                    if (sentiment > 0.3) {
+                        strategySelect.value = 'Bull Call Spread';
+                    } else if (sentiment < -0.3) {
+                        strategySelect.value = 'Bear Put Spread';
+                    } else if (volatility > 0.6) {
+                        strategySelect.value = 'Straddle';
+                    } else {
+                        strategySelect.value = 'Iron Condor';
+                    }
+                    
+                    // Generate strategy
+                    document.getElementById('generate-strategy-button').click();
+                });
+            });
+        });
+        
+        // Helper functions for market analysis
+        function getRecommendation(sentiment, volatility) {
+            if (sentiment === 'Bullish' && volatility === 'High') {
+                return 'Bull Call Spread';
+            } else if (sentiment === 'Bullish' && volatility !== 'High') {
+                return 'Long Call';
+            } else if (sentiment === 'Bearish' && volatility === 'High') {
+                return 'Bear Put Spread';
+            } else if (sentiment === 'Bearish' && volatility !== 'High') {
+                return 'Long Put';
+            } else if (sentiment === 'Neutral' && volatility === 'High') {
+                return 'Straddle';
+            } else {
+                return 'Iron Condor';
+            }
+        }
+        
+        function getOpportunityReason(sentiment, volatility) {
+            if (sentiment === 'Bullish') {
+                return 'Positive social media sentiment and recent news coverage' + (volatility === 'High' ? ' with high implied volatility' : '');
+            } else if (sentiment === 'Bearish') {
+                return 'Negative earnings outlook and bearish technical indicators' + (volatility === 'High' ? ' with high implied volatility' : '');
+            } else {
+                return 'Mixed signals with potential for significant movement' + (volatility === 'High' ? ' and high implied volatility' : '');
+            }
+        }
+        
+        function getRecommendedStrategy(sentiment, volatility) {
+            return getRecommendation(sentiment, volatility);
+        }
+        
+        // Strategy Recommendations Tab
+        document.getElementById('generate-strategy-button').addEventListener('click', () => {
+            const symbol = document.getElementById('strategy-symbol').value;
+            const strategyType = document.getElementById('strategy-type').value;
+            
+            // Show results section
+            document.getElementById('strategy-results').style.display = 'block';
+            
+            // Generate strategy details
+            const currentPrice = Math.round((100 + Math.random() * 200) * 100) / 100; // Random price between 100 and 300
+            const expirationDays = 30; // Default to 30 days
+            const expiration = new Date();
+            expiration.setDate(expiration.getDate() + expirationDays);
+            const expirationFormatted = expiration.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            
+            // Set strategy title and details
+            document.getElementById('strategy-title').textContent = `Strategy: ${strategyType} on ${symbol}`;
+            document.getElementById('current-price').textContent = `$${currentPrice.toFixed(2)}`;
+            document.getElementById('expiration-date').textContent = expirationFormatted;
+            
+            // Set random sentiment and volatility
+            const sentiment = Math.random() * 2 - 1; // Between -1 and 1
+            let sentimentCategory, badgeClass;
+            if (sentiment > 0.3) {
+                sentimentCategory = 'Bullish';
+                badgeClass = 'badge-bullish';
+            } else if (sentiment < -0.3) {
+                sentimentCategory = 'Bearish';
+                badgeClass = 'badge-bearish';
+            } else {
+                sentimentCategory = 'Neutral';
+                badgeClass = 'badge-neutral';
+            }
+            
+            const volatility = Math.random(); // Between 0 and 1
+            let volatilityCategory;
+            if (volatility > 0.7) {
+                volatilityCategory = 'High';
+            } else if (volatility > 0.3) {
+                volatilityCategory = 'Medium';
+            } else {
+                volatilityCategory = 'Low';
+            }
+            
+            document.getElementById('market-sentiment').textContent = sentimentCategory;
+            document.getElementById('market-sentiment').className = `badge ${badgeClass}`;
+            document.getElementById('volatility-score').textContent = `${volatilityCategory} (${volatility.toFixed(2)})`;
+            
+            // Generate strategy legs
+            const legsTable = document.getElementById('strategy-legs').querySelector('tbody');
+            legsTable.innerHTML = '';
+            
+            let netDebit = 0;
+            let netCredit = 0;
+            let maxProfit = 0;
+            let maxLoss = 0;
+            
+            switch (strategyType) {
+                case 'Bull Call Spread':
+                    {
+                        const lowerStrike = Math.round(currentPrice * 0.95);
+                        const upperStrike = Math.round(currentPrice * 1.05);
+                        const lowerPrice = Math.round((upperStrike - lowerStrike) * 0.4 * 100) / 100;
+                        const upperPrice = Math.round((upperStrike - lowerStrike) * 0.15 * 100) / 100;
+                        
+                        // Add legs
+                        const buyLeg = document.createElement('tr');
+                        buyLeg.innerHTML = `
+                            <td>Call</td>
+                            <td>Buy</td>
+                            <td>$${lowerStrike.toFixed(2)}</td>
+                            <td>$${lowerPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(buyLeg);
+                        
+                        const sellLeg = document.createElement('tr');
+                        sellLeg.innerHTML = `
+                            <td>Call</td>
+                            <td>Sell</td>
+                            <td>$${upperStrike.toFixed(2)}</td>
+                            <td>$${upperPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(sellLeg);
+                        
+                        netDebit = Math.round((lowerPrice - upperPrice) * 100) / 100;
+                        maxProfit = Math.round((upperStrike - lowerStrike - netDebit) * 100) / 100;
+                        maxLoss = netDebit;
+                    }
+                    break;
+                    
+                case 'Bear Put Spread':
+                    {
+                        const upperStrike = Math.round(currentPrice * 1.05);
+                        const lowerStrike = Math.round(currentPrice * 0.95);
+                        const upperPrice = Math.round((upperStrike - lowerStrike) * 0.4 * 100) / 100;
+                        const lowerPrice = Math.round((upperStrike - lowerStrike) * 0.15 * 100) / 100;
+                        
+                        // Add legs
+                        const buyLeg = document.createElement('tr');
+                        buyLeg.innerHTML = `
+                            <td>Put</td>
+                            <td>Buy</td>
+                            <td>$${upperStrike.toFixed(2)}</td>
+                            <td>$${upperPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(buyLeg);
+                        
+                        const sellLeg = document.createElement('tr');
+                        sellLeg.innerHTML = `
+                            <td>Put</td>
+                            <td>Sell</td>
+                            <td>$${lowerStrike.toFixed(2)}</td>
+                            <td>$${lowerPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(sellLeg);
+                        
+                        netDebit = Math.round((upperPrice - lowerPrice) * 100) / 100;
+                        maxProfit = Math.round((upperStrike - lowerStrike - netDebit) * 100) / 100;
+                        maxLoss = netDebit;
+                    }
+                    break;
+                    
+                case 'Iron Condor':
+                    {
+                        const farUpperStrike = Math.round(currentPrice * 1.10);
+                        const upperStrike = Math.round(currentPrice * 1.05);
+                        const lowerStrike = Math.round(currentPrice * 0.95);
+                        const farLowerStrike = Math.round(currentPrice * 0.90);
+                        
+                        const upperCallPrice = Math.round(currentPrice * 0.01 * 100) / 100;
+                        const lowerCallPrice = Math.round(currentPrice * 0.03 * 100) / 100;
+                        const upperPutPrice = Math.round(currentPrice * 0.03 * 100) / 100;
+                        const lowerPutPrice = Math.round(currentPrice * 0.01 * 100) / 100;
+                        
+                        // Add legs
+                        const sellCallLeg = document.createElement('tr');
+                        sellCallLeg.innerHTML = `
+                            <td>Call</td>
+                            <td>Sell</td>
+                            <td>$${upperStrike.toFixed(2)}</td>
+                            <td>$${lowerCallPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(sellCallLeg);
+                        
+                        const buyCallLeg = document.createElement('tr');
+                        buyCallLeg.innerHTML = `
+                            <td>Call</td>
+                            <td>Buy</td>
+                            <td>$${farUpperStrike.toFixed(2)}</td>
+                            <td>$${upperCallPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(buyCallLeg);
+                        
+                        const sellPutLeg = document.createElement('tr');
+                        sellPutLeg.innerHTML = `
+                            <td>Put</td>
+                            <td>Sell</td>
+                            <td>$${lowerStrike.toFixed(2)}</td>
+                            <td>$${upperPutPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(sellPutLeg);
+                        
+                        const buyPutLeg = document.createElement('tr');
+                        buyPutLeg.innerHTML = `
+                            <td>Put</td>
+                            <td>Buy</td>
+                            <td>$${farLowerStrike.toFixed(2)}</td>
+                            <td>$${lowerPutPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(buyPutLeg);
+                        
+                        netCredit = Math.round((lowerCallPrice + upperPutPrice - upperCallPrice - lowerPutPrice) * 100) / 100;
+                        maxProfit = netCredit;
+                        maxLoss = Math.round((farUpperStrike - upperStrike - netCredit) * 100) / 100;
+                    }
+                    break;
+                    
+                case 'Straddle':
+                    {
+                        const atStrike = Math.round(currentPrice);
+                        const callPrice = Math.round(currentPrice * 0.05 * 100) / 100;
+                        const putPrice = Math.round(currentPrice * 0.05 * 100) / 100;
+                        
+                        // Add legs
+                        const callLeg = document.createElement('tr');
+                        callLeg.innerHTML = `
+                            <td>Call</td>
+                            <td>Buy</td>
+                            <td>$${atStrike.toFixed(2)}</td>
+                            <td>$${callPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(callLeg);
+                        
+                        const putLeg = document.createElement('tr');
+                        putLeg.innerHTML = `
+                            <td>Put</td>
+                            <td>Buy</td>
+                            <td>$${atStrike.toFixed(2)}</td>
+                            <td>$${putPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(putLeg);
+                        
+                        netDebit = callPrice + putPrice;
+                        maxProfit = 'Unlimited';
+                        maxLoss = netDebit;
+                    }
+                    break;
+                    
+                case 'Strangle':
+                    {
+                        const callStrike = Math.round(currentPrice * 1.05);
+                        const putStrike = Math.round(currentPrice * 0.95);
+                        const callPrice = Math.round(currentPrice * 0.03 * 100) / 100;
+                        const putPrice = Math.round(currentPrice * 0.03 * 100) / 100;
+                        
+                        // Add legs
+                        const callLeg = document.createElement('tr');
+                        callLeg.innerHTML = `
+                            <td>Call</td>
+                            <td>Buy</td>
+                            <td>$${callStrike.toFixed(2)}</td>
+                            <td>$${callPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(callLeg);
+                        
+                        const putLeg = document.createElement('tr');
+                        putLeg.innerHTML = `
+                            <td>Put</td>
+                            <td>Buy</td>
+                            <td>$${putStrike.toFixed(2)}</td>
+                            <td>$${putPrice.toFixed(2)}</td>
+                            <td>${expirationFormatted}</td>
+                        `;
+                        legsTable.appendChild(putLeg);
+                        
+                        netDebit = callPrice + putPrice;
+                        maxProfit = 'Unlimited';
+                        maxLoss = netDebit;
+                    }
+                    break;
+            }
+            
+            // Set strategy metrics
+            if (netDebit > 0) {
+                document.getElementById('net-debit-credit').textContent = `$${(netDebit * 100).toFixed(2)} Debit`;
+            } else if (netCredit > 0) {
+                document.getElementById('net-debit-credit').textContent = `$${(netCredit * 100).toFixed(2)} Credit`;
+            }
+            
+            if (typeof maxProfit === 'number') {
+                document.getElementById('max-profit').textContent = `$${(maxProfit * 100).toFixed(2)}`;
+            } else {
+                document.getElementById('max-profit').textContent = maxProfit;
+            }
+            
+            document.getElementById('max-loss').textContent = `$${(maxLoss * 100).toFixed(2)}`;
+            
+            // Set probability of profit based on strategy and sentiment
+            let probabilityOfProfit;
+            if (strategyType === 'Bull Call Spread') {
+                probabilityOfProfit = Math.round(30 + sentiment * 20);
+            } else if (strategyType === 'Bear Put Spread') {
+                probabilityOfProfit = Math.round(30 - sentiment * 20);
+            } else if (strategyType === 'Straddle' || strategyType === 'Strangle') {
+                probabilityOfProfit = Math.round(40 + volatility * 20);
+            } else if (strategyType === 'Iron Condor') {
+                probabilityOfProfit = Math.round(60 - Math.abs(sentiment) * 10);
+            }
+            
+            document.getElementById('profit-probability').textContent = `${probabilityOfProfit}%`;
+            
+            // Generate price scenarios
+            const scenariosTable = document.getElementById('price-scenarios').querySelector('tbody');
+            scenariosTable.innerHTML = '';
+            
+            const priceRange = 0.2; // 20% up and down
+            const steps = 5;
+            
+            for (let i = -steps; i <= steps; i++) {
+                const percentChange = (i / steps) * priceRange * 100;
+                const price = Math.round(currentPrice * (1 + (i / steps) * priceRange) * 100) / 100;
+                
+                // Calculate profit/loss based on strategy type and price
+                let profitLoss = 0;
+                
+                switch (strategyType) {
+                    case 'Bull Call Spread':
+                        {
+                            const lowerStrike = Math.round(currentPrice * 0.95);
+                            const upperStrike = Math.round(currentPrice * 1.05);
+                            
+                            if (price <= lowerStrike) {
+                                profitLoss = -netDebit * 100;
+                            } else if (price >= upperStrike) {
+                                profitLoss = (upperStrike - lowerStrike - netDebit) * 100;
+                            } else {
+                                profitLoss = (price - lowerStrike - netDebit) * 100;
+                            }
+                        }
+                        break;
+                        
+                    case 'Bear Put Spread':
+                        {
+                            const upperStrike = Math.round(currentPrice * 1.05);
+                            const lowerStrike = Math.round(currentPrice * 0.95);
+                            
+                            if (price >= upperStrike) {
+                                profitLoss = -netDebit * 100;
+                            } else if (price <= lowerStrike) {
+                                profitLoss = (upperStrike - lowerStrike - netDebit) * 100;
+                            } else {
+                                profitLoss = (upperStrike - price - netDebit) * 100;
+                            }
+                        }
+                        break;
+                        
+                    case 'Straddle':
+                        {
+                            const strike = Math.round(currentPrice);
+                            const distance = Math.abs(price - strike);
+                            
+                            if (distance > netDebit) {
+                                profitLoss = (distance - netDebit) * 100;
+                            } else {
+                                profitLoss = -(netDebit - distance) * 100;
+                            }
+                        }
+                        break;
+                        
+                    case 'Strangle':
+                        {
+                            const callStrike = Math.round(currentPrice * 1.05);
+                            const putStrike = Math.round(currentPrice * 0.95);
+                            
+                            if (price > callStrike) {
+                                profitLoss = (price - callStrike - netDebit) * 100;
+                            } else if (price < putStrike) {
+                                profitLoss = (putStrike - price - netDebit) * 100;
+                            } else {
+                                profitLoss = -netDebit * 100;
+                            }
+                        }
+                        break;
+                        
+                    case 'Iron Condor':
+                        {
+                            const farUpperStrike = Math.round(currentPrice * 1.10);
+                            const upperStrike = Math.round(currentPrice * 1.05);
+                            const lowerStrike = Math.round(currentPrice * 0.95);
+                            const farLowerStrike = Math.round(currentPrice * 0.90);
+                            
+                            if (price <= farLowerStrike) {
+                                profitLoss = -(farLowerStrike - lowerStrike - netCredit) * 100;
+                            } else if (price <= lowerStrike) {
+                                profitLoss = ((price - farLowerStrike) - (lowerStrike - farLowerStrike - netCredit)) * 100;
+                            } else if (price <= upperStrike) {
+                                profitLoss = netCredit * 100;
+                            } else if (price <= farUpperStrike) {
+                                profitLoss = (farUpperStrike - price - (farUpperStrike - upperStrike - netCredit)) * 100;
+                            } else {
+                                profitLoss = -(farUpperStrike - upperStrike - netCredit) * 100;
+                            }
+                        }
+                        break;
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>$${price.toFixed(2)}</td>
+                    <td>${percentChange.toFixed(2)}%</td>
+                    <td class="${profitLoss >= 0 ? 'profit' : 'loss'}">$${profitLoss.toFixed(2)}</td>
+                `;
+                scenariosTable.appendChild(row);
+            }
+            
+            // Add event listener to adjust strategy button
+            document.getElementById('adjust-strategy-button').addEventListener('click', () => {
+                // Switch to calculator tab
+                document.querySelector('.tab[data-tab="trade-calculator"]').click();
+                
+                // Set values in calculator tab
+                document.getElementById('calculator-symbol').value = symbol;
+                document.getElementById('calculator-strategy').value = strategyType;
+                document.getElementById('stock-price').value = currentPrice.toFixed(2);
+                
+                // Trigger calculation
+                document.getElementById('calculate-button').click();
+            });
+        });
+        
+        // Trade Calculator Tab
+        document.getElementById('contracts-slider').addEventListener('input', function() {
+            document.getElementById('contracts-value').textContent = this.value;
+        });
+        
+        document.getElementById('expiration-slider').addEventListener('input', function() {
+            document.getElementById('expiration-value').textContent = this.value;
+        });
+        
+        document.getElementById('volatility-slider').addEventListener('input', function() {
+            document.getElementById('volatility-value').textContent = this.value + '%';
+        });
+        
+        document.getElementById('calculate-button').addEventListener('click', () => {
+            const symbol = document.getElementById('calculator-symbol').value;
+            const strategyType = document.getElementById('calculator-strategy').value;
+            const stockPrice = parseFloat(document.getElementById('stock-price').value);
+            const contracts = parseInt(document.getElementById('contracts-slider').value);
+            const expirationDays = parseInt(document.getElementById('expiration-slider').value);
+            const volatility = parseInt(document.getElementById('volatility-slider').value);
+            
+            // Show results section
+            document.getElementById('calculator-results').style.display = 'block';
+            
+            // Set result strategy
+            document.getElementById('result-strategy').textContent = `${strategyType} on ${symbol}`;
+            
+            // Calculate trade details based on strategy type
+            let investment, maxProfit, maxLoss, breakeven, roi;
+            
+            switch (strategyType) {
+                case 'Bull Call Spread':
+                    {
+                        const lowerStrike = Math.round(stockPrice * 0.95);
+                        const upperStrike = Math.round(stockPrice * 1.05);
+                        const netDebit = Math.round((upperStrike - lowerStrike) * 0.25 * 100) / 100;
+                        
+                        investment = netDebit * 100 * contracts;
+                        maxProfit = (upperStrike - lowerStrike - netDebit) * 100 * contracts;
+                        maxLoss = investment;
+                        breakeven = lowerStrike + netDebit;
+                        roi = (maxProfit / investment) * 100;
+                    }
+                    break;
+                    
+                case 'Bear Put Spread':
+                    {
+                        const upperStrike = Math.round(stockPrice * 1.05);
+                        const lowerStrike = Math.round(stockPrice * 0.95);
+                        const netDebit = Math.round((upperStrike - lowerStrike) * 0.25 * 100) / 100;
+                        
+                        investment = netDebit * 100 * contracts;
+                        maxProfit = (upperStrike - lowerStrike - netDebit) * 100 * contracts;
+                        maxLoss = investment;
+                        breakeven = upperStrike - netDebit;
+                        roi = (maxProfit / investment) * 100;
+                    }
+                    break;
+                    
+                case 'Iron Condor':
+                    {
+                        const farUpperStrike = Math.round(stockPrice * 1.10);
+                        const upperStrike = Math.round(stockPrice * 1.05);
+                        const lowerStrike = Math.round(stockPrice * 0.95);
+                        const farLowerStrike = Math.round(stockPrice * 0.90);
+                        
+                        const netCredit = Math.round((upperStrike - lowerStrike) * 0.1 * 100) / 100;
+                        
+                        investment = (upperStrike - lowerStrike - netCredit) * 100 * contracts;
+                        maxProfit = netCredit * 100 * contracts;
+                        maxLoss = (upperStrike - lowerStrike - netCredit) * 100 * contracts;
+                        breakeven = [lowerStrike - netCredit, upperStrike + netCredit];
+                        roi = (maxProfit / investment) * 100;
+                    }
+                    break;
+                    
+                case 'Straddle':
+                    {
+                        const netDebit = Math.round(stockPrice * 0.1 * 100) / 100;
+                        
+                        investment = netDebit * 100 * contracts;
+                        maxProfit = 'Unlimited';
+                        maxLoss = investment;
+                        breakeven = [stockPrice - netDebit, stockPrice + netDebit];
+                        roi = 'Unlimited';
+                    }
+                    break;
+                    
+                case 'Strangle':
+                    {
+                        const callStrike = Math.round(stockPrice * 1.05);
+                        const putStrike = Math.round(stockPrice * 0.95);
+                        const netDebit = Math.round(stockPrice * 0.06 * 100) / 100;
+                        
+                        investment = netDebit * 100 * contracts;
+                        maxProfit = 'Unlimited';
+                        maxLoss = investment;
+                        breakeven = [putStrike - netDebit, callStrike + netDebit];
+                        roi = 'Unlimited';
+                    }
+                    break;
+            }
+            
+            // Set trade summary values
+            document.getElementById('result-investment').textContent = `$${investment.toFixed(2)}`;
+            
+            if (typeof maxProfit === 'number') {
+                document.getElementById('result-max-profit').textContent = `$${maxProfit.toFixed(2)}`;
+            } else {
+                document.getElementById('result-max-profit').textContent = maxProfit;
+            }
+            
+            document.getElementById('result-max-loss').textContent = `$${maxLoss.toFixed(2)}`;
+            
+            if (Array.isArray(breakeven)) {
+                document.getElementById('result-breakeven').textContent = `$${breakeven[0].toFixed(2)} and $${breakeven[1].toFixed(2)}`;
+            } else {
+                document.getElementById('result-breakeven').textContent = `$${breakeven.toFixed(2)}`;
+            }
+            
+            if (typeof roi === 'number') {
+                document.getElementById('result-roi').textContent = `${roi.toFixed(2)}%`;
+            } else {
+                document.getElementById('result-roi').textContent = roi;
+            }
+            
+            // Generate market scenarios table
+            const scenariosTable = document.getElementById('calculator-scenarios').querySelector('tbody');
+            scenariosTable.innerHTML = '';
+            
+            const scenarios = [
+                { name: 'Very Bullish (+15%)', change: 0.15 },
+                { name: 'Bullish (+7%)', change: 0.07 },
+                { name: 'Neutral (0%)', change: 0 },
+                { name: 'Bearish (-7%)', change: -0.07 },
+                { name: 'Very Bearish (-15%)', change: -0.15 }
+            ];
+            
+            scenarios.forEach(scenario => {
+                const scenarioPrice = stockPrice * (1 + scenario.change);
+                
+                // Calculate profit/loss based on strategy type and price
+                let profitLoss = 0;
+                
+                switch (strategyType) {
+                    case 'Bull Call Spread':
+                        {
+                            const lowerStrike = Math.round(stockPrice * 0.95);
+                            const upperStrike = Math.round(stockPrice * 1.05);
+                            const netDebit = Math.round((upperStrike - lowerStrike) * 0.25 * 100) / 100;
+                            
+                            if (scenarioPrice <= lowerStrike) {
+                                profitLoss = -netDebit * 100 * contracts;
+                            } else if (scenarioPrice >= upperStrike) {
+                                profitLoss = (upperStrike - lowerStrike - netDebit) * 100 * contracts;
+                            } else {
+                                profitLoss = (scenarioPrice - lowerStrike - netDebit) * 100 * contracts;
+                            }
+                        }
+                        break;
+                        
+                    case 'Bear Put Spread':
+                        {
+                            const upperStrike = Math.round(stockPrice * 1.05);
+                            const lowerStrike = Math.round(stockPrice * 0.95);
+                            const netDebit = Math.round((upperStrike - lowerStrike) * 0.25 * 100) / 100;
+                            
+                            if (scenarioPrice >= upperStrike) {
+                                profitLoss = -netDebit * 100 * contracts;
+                            } else if (scenarioPrice <= lowerStrike) {
+                                profitLoss = (upperStrike - lowerStrike - netDebit) * 100 * contracts;
+                            } else {
+                                profitLoss = (upperStrike - scenarioPrice - netDebit) * 100 * contracts;
+                            }
+                        }
+                        break;
+                        
+                    case 'Iron Condor':
+                        {
+                            const farUpperStrike = Math.round(stockPrice * 1.10);
+                            const upperStrike = Math.round(stockPrice * 1.05);
+                            const lowerStrike = Math.round(stockPrice * 0.95);
+                            const farLowerStrike = Math.round(stockPrice * 0.90);
+                            
+                            const netCredit = Math.round((upperStrike - lowerStrike) * 0.1 * 100) / 100;
+                            
+                            if (scenarioPrice <= farLowerStrike) {
+                                profitLoss = -(farLowerStrike - lowerStrike - netCredit) * 100 * contracts;
+                            } else if (scenarioPrice <= lowerStrike) {
+                                profitLoss = ((scenarioPrice - farLowerStrike) - (lowerStrike - farLowerStrike - netCredit)) * 100 * contracts;
+                            } else if (scenarioPrice <= upperStrike) {
+                                profitLoss = netCredit * 100 * contracts;
+                            } else if (scenarioPrice <= farUpperStrike) {
+                                profitLoss = (farUpperStrike - scenarioPrice - (farUpperStrike - upperStrike - netCredit)) * 100 * contracts;
+                            } else {
+                                profitLoss = -(farUpperStrike - upperStrike - netCredit) * 100 * contracts;
+                            }
+                        }
+                        break;
+                        
+                    case 'Straddle':
+                        {
+                            const netDebit = Math.round(stockPrice * 0.1 * 100) / 100;
+                            const distance = Math.abs(scenarioPrice - stockPrice);
+                            
+                            if (distance > netDebit) {
+                                profitLoss = (distance - netDebit) * 100 * contracts;
+                            } else {
+                                profitLoss = -(netDebit - distance) * 100 * contracts;
+                            }
+                        }
+                        break;
+                        
+                    case 'Strangle':
+                        {
+                            const callStrike = Math.round(stockPrice * 1.05);
+                            const putStrike = Math.round(stockPrice * 0.95);
+                            const netDebit = Math.round(stockPrice * 0.06 * 100) / 100;
+                            
+                            if (scenarioPrice > callStrike) {
+                                profitLoss = (scenarioPrice - callStrike - netDebit) * 100 * contracts;
+                            } else if (scenarioPrice < putStrike) {
+                                profitLoss = (putStrike - scenarioPrice - netDebit) * 100 * contracts;
+                            } else {
+                                profitLoss = -netDebit * 100 * contracts;
+                            }
+                        }
+                        break;
+                }
+                
+                const percentReturn = investment > 0 ? (profitLoss / investment) * 100 : 0;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${scenario.name}</td>
+                    <td>$${scenarioPrice.toFixed(2)}</td>
+                    <td class="${profitLoss >= 0 ? 'profit' : 'loss'}">$${profitLoss.toFixed(2)}</td>
+                    <td class="${profitLoss >= 0 ? 'profit' : 'loss'}">${percentReturn.toFixed(2)}%</td>
+                `;
+                scenariosTable.appendChild(row);
+            });
+        });
+        
+        // Initialize with default data
+        document.getElementById('analyze-button').click();
+    </script>
+</body>
+</html>
